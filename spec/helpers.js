@@ -67,9 +67,18 @@ export async function configureTestingOrder(Brandibble, customer, address, cardO
   expect(data).to.be.a('object');
   expect(data.menu).to.be.a('array');
 
-
   const newOrder = await Brandibble.orders.create(location.location_id, serviceType);
-  const product = data.menu[0].children[0].items[0];
+
+  const product =
+    data.menu.find(item => item.name === 'The Market')
+    .children.find(item => item.name === 'Marketbowls')
+    .items.find(item => item.name === 'Charred Chicken Marketbowl');
+
+  const soldOutItemIDs  = data.sold_out_items;
+  if (soldOutItemIDs.includes(product.id)) {
+    throw "BrandibbleBackendConfig: Charred Chicken Marketbowl is Sold Out, tests can not run.";
+  }
+
   const lineItem = await newOrder.addLineItem(product, 1);
 
   expect(lineItem.product.name).to.equal('Charred Chicken Marketbowl');
@@ -79,10 +88,15 @@ export async function configureTestingOrder(Brandibble, customer, address, cardO
   const bases = lineItem.optionGroups()[0];
   const sides = lineItem.optionGroups()[1];
 
+  /* Load Available Sides & Bases */
+  const firstAvailableBase = bases.option_items.find(item => !soldOutItemIDs.includes(item.id));
+  const firstAvailableSide = sides.option_items.find(item => !soldOutItemIDs.includes(item.id));
+  const secondAvailableSide = sides.option_items.find(item => !soldOutItemIDs.includes(item.id) && item.id !== firstAvailableSide.id);
+
   await Promise.all([
-    newOrder.addOptionToLineItem(lineItem, bases, bases.option_items[0]),
-    newOrder.addOptionToLineItem(lineItem, sides, sides.option_items[0]),
-    newOrder.addOptionToLineItem(lineItem, sides, sides.option_items[1]),
+    newOrder.addOptionToLineItem(lineItem, bases, firstAvailableBase),
+    newOrder.addOptionToLineItem(lineItem, sides, firstAvailableSide),
+    newOrder.addOptionToLineItem(lineItem, sides, secondAvailableSide),
   ]);
 
   expect(lineItem.isValid()).to.equal(true);

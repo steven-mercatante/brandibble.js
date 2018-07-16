@@ -20,7 +20,10 @@ describe('Favorites', () => {
         return Brandibble.menus.build(data[0].location_id, 'pickup').then((response) => {
           const { menu } = shouldSucceed(response);
           expect(menu).to.be.an('array');
-          const product = menu[0].children[0].items[0];
+          const product =
+            menu.find(item => item.name === 'The Market')
+            .children.find(item => item.name === 'Marketbowls')
+            .items.find(item => item.name === 'Charred Chicken Marketbowl');
           expect(product.name).to.eq('Charred Chicken Marketbowl');
           lineItem = new Brandibble.LineItem(productJSON, 1);
           const bases = lineItem.optionGroups()[0];
