@@ -1,5 +1,6 @@
 /* global expect */
 import find from 'lodash.find';
+import includes from 'lodash.includes';
 import { PaymentTypes } from '../lib/utils';
 
 export const TestingUser = {
@@ -75,7 +76,7 @@ export async function configureTestingOrder(Brandibble, customer, address, cardO
   const product = find(marketBowls.items, item => item.name === 'Charred Chicken Marketbowl');
 
   const soldOutItemIDs = data.sold_out_items;
-  if (soldOutItemIDs.includes(product.id)) {
+  if (includes(soldOutItemIDs, product.id)) {
     throw new Error('BrandibbleBackendConfig: Charred Chicken Marketbowl is Sold Out, tests can not run.');
   }
 
@@ -89,9 +90,9 @@ export async function configureTestingOrder(Brandibble, customer, address, cardO
   const sides = lineItem.optionGroups()[1];
 
   /* Load Available Sides & Bases */
-  const firstAvailableBase = bases.option_items.find(item => !soldOutItemIDs.includes(item.id));
-  const firstAvailableSide = sides.option_items.find(item => !soldOutItemIDs.includes(item.id));
-  const secondAvailableSide = sides.option_items.find(item => !soldOutItemIDs.includes(item.id) && item.id !== firstAvailableSide.id);
+  const firstAvailableBase = bases.option_items.find(item => !includes(soldOutItemIDs, item.id));
+  const firstAvailableSide = sides.option_items.find(item => !includes(soldOutItemIDs, item.id));
+  const secondAvailableSide = sides.option_items.find(item => !includes(soldOutItemIDs, item.id) && item.id !== firstAvailableSide.id);
 
   await Promise.all([
     newOrder.addOptionToLineItem(lineItem, bases, firstAvailableBase),
