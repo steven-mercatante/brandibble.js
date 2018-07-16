@@ -1,4 +1,5 @@
 /* global expect */
+import find from 'lodash.find';
 import { PaymentTypes } from '../lib/utils';
 
 export const TestingUser = {
@@ -69,14 +70,13 @@ export async function configureTestingOrder(Brandibble, customer, address, cardO
 
   const newOrder = await Brandibble.orders.create(location.location_id, serviceType);
 
-  const product =
-    data.menu.find(item => item.name === 'The Market')
-    .children.find(item => item.name === 'Marketbowls')
-    .items.find(item => item.name === 'Charred Chicken Marketbowl');
+  const market = find(data.menu, item => item.name === 'The Market');
+  const marketBowls = find(market.children, item => item.name === 'Marketbowls');
+  const product = find(marketBowls.items, item => item.name === 'Charred Chicken Marketbowl');
 
-  const soldOutItemIDs  = data.sold_out_items;
+  const soldOutItemIDs = data.sold_out_items;
   if (soldOutItemIDs.includes(product.id)) {
-    throw "BrandibbleBackendConfig: Charred Chicken Marketbowl is Sold Out, tests can not run.";
+    throw new Error('BrandibbleBackendConfig: Charred Chicken Marketbowl is Sold Out, tests can not run.');
   }
 
   const lineItem = await newOrder.addLineItem(product, 1);
