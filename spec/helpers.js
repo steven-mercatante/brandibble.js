@@ -90,9 +90,9 @@ export async function configureTestingOrder(Brandibble, customer, address, cardO
   const sides = lineItem.optionGroups()[1];
 
   /* Load Available Sides & Bases */
-  const firstAvailableBase = bases.option_items.find(item => !includes(soldOutItemIDs, item.id));
-  const firstAvailableSide = sides.option_items.find(item => !includes(soldOutItemIDs, item.id));
-  const secondAvailableSide = sides.option_items.find(item => !includes(soldOutItemIDs, item.id) && item.id !== firstAvailableSide.id);
+  const firstAvailableBase = find(bases.option_items, item => !includes(soldOutItemIDs, item.id));
+  const firstAvailableSide = find(sides.option_items, item => !includes(soldOutItemIDs, item.id));
+  const secondAvailableSide = find(sides.option_items, item => !includes(soldOutItemIDs, item.id) && item.id !== firstAvailableSide.id);
 
   await Promise.all([
     newOrder.addOptionToLineItem(lineItem, bases, firstAvailableBase),
