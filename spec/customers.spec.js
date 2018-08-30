@@ -95,11 +95,16 @@ describe('Customers', () => {
     expect(response).to.be.true;
   });
 
-  it('can trigger a customer\'s update password flow', async () => {
-    const response = await Brandibble.customers.updatePassword('123141254jlasdfjwqer', {
-      password: 'newpassword',
-    });
-    expect(response).to.be.true;
+  it('can complete a customer\'s reset password flow', async () => {
+    try {
+      await Brandibble.customers.finishResetPassword('123141254jlasdfjwqer', {
+        password: 'newpassword',
+      });
+    } catch(response) {
+      const errors = shouldError(response);
+      expect(errors).to.be.a('array');
+      expect(errors[0]).to.have.property('code', 'customers.reset.invalid_token');
+    }
   });
 
   it('can not show a customer that does not belong to the current token', () => {
