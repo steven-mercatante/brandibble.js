@@ -85,9 +85,9 @@ export default class Customers {
     return promise;
   }
 
-  updatePassword(token, body) {
+  finishResetPassword(token, body) {
     const promise = this.adapter.request('POST', `customers/reset/${token}`, body);
-    this.events.triggerAsync('customers.updatePassword', promise);
+    this.events.triggerAsync('customers.finishResetPassword', promise);
     return promise;
   }
 
