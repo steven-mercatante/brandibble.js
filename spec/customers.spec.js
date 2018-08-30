@@ -95,7 +95,7 @@ describe('Customers', () => {
     expect(response).to.be.true;
   });
 
-  it('can complete a customer\'s reset password flow', async () => {
+  it('can attempt to complete a customer\'s reset password flow', async () => {
     try {
       await Brandibble.customers.finishResetPassword('123141254jlasdfjwqer', {
         password: 'newpassword',
