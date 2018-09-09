@@ -19,17 +19,25 @@ const FiveHundredError = {
 };
 
 /* Ensure the only persisted information here is customer_card_id */
-function sanitizeCreditCard(order) {
-  const _order = order;
-  if (_order.creditCard) {
-    const { customer_card_id } = _order.creditCard;
+function sanitizeSensitiveOrderData(order) {
+  const removed = { customer: {} };
+
+  if (order.creditCard) {
+    removed.creditCard = { ...order.creditCard };
+    const { customer_card_id } = order.creditCard;
     if (customer_card_id) {
-      _order.creditCard = { customer_card_id };
+      order.creditCard = { customer_card_id };
     } else {
-      _order.creditCard = null;
+      order.creditCard = null;
     }
   }
-  return _order;
+
+  if (order.customer && order.customer.password) {
+    removed.customer.password = `${order.customer.password}`;
+    delete order.customer.password;
+  }
+
+  return { sanitized: order, removed };
 }
 
 /*
@@ -129,18 +137,17 @@ export default class Adapter {
   }
 
   persistCurrentOrder(order) {
-    const _order = order;
-    this.currentOrder = _order;
-    /* Ensure raw Credit Card data isn't persisted to this.storage */
-    if (_order.creditCard) {
-      const creditCardData = Object.assign({}, _order.creditCard);
-
-      return this.storage.setItem('currentOrder', CircularJSON.stringify(sanitizeCreditCard(_order))).then(() => {
-        _order.creditCard = creditCardData;
-        return _order;
-      });
-    }
-    return this.storage.setItem('currentOrder', CircularJSON.stringify(_order)).then(() => _order);
+    this.currentOrder = order;
+    const { sanitized, removed } = sanitizeSensitiveOrderData(order);
+    return this.storage.setItem('currentOrder', CircularJSON.stringify(sanitized)).then(() => {
+      if (removed.creditCard) {
+        sanitized.creditCard = removed.creditCard;
+      }
+      if (removed.customer.password) {
+        sanitized.customer.password = removed.customer.password;
+      }
+      return order;
+    });
   }
 
   flushCurrentOrder() {
