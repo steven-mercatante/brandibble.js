@@ -26,6 +26,9 @@ export const customerValidations = {
     presence: true,
     email: true,
   },
+  accepts_marketing: {
+    //type: "boolean" // TODO when validate.js releases 0.12^ add this
+  },
   password: {
     length: { minimum: 6 },
   },
