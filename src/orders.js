@@ -72,12 +72,20 @@ export default class Orders {
   /* The only attrs testChanges accepts are location_id, service_type & requested_at  */
   validateCart(orderObj, testChanges = {}) {
     const body = orderObj.formatForValidation();
+    /* Don't send staged password to validate endpoints */
+    if (body.customer && body.customer.password) {
+      delete body.customer.password;
+    }
     Object.assign(body, testChanges);
     return this.adapter.request('POST', 'cart/validate', body);
   }
 
   validate(orderObj) {
     const body = orderObj.format();
+    /* Don't send staged password to validate endpoints */
+    if (body.customer && body.customer.password) {
+      delete body.customer.password;
+    }
     return this.adapter.request('POST', 'orders/validate', body);
   }
 
