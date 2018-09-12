@@ -89,8 +89,11 @@ export default class Orders {
     return this.adapter.request('POST', 'orders/validate', body);
   }
 
-  submit(orderObj) {
+  submit(orderObj, options = {}) {
     const body = orderObj.format();
+    if (options && options.includeItemDetails) {
+      body.include_item_details = true;
+    }
     const promise = this.adapter.request('POST', 'orders/create', body);
     this.events.triggerAsync('orders.submit', promise);
     return promise;
