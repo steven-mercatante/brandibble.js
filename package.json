@@ -2,7 +2,7 @@
   "name": "brandibble",
   "version": "1.14.0",
   "description": "API Wrapper for Brandibble.co",
-  "repository": "https://github.com/sanctuarycomputer/brandibble.js",
+  "repository": "https://github.com/steven-mercatante/brandibble.js",
   "engines": {
     "node": ">=7.6.0",
     "npm": ">=4.3.0"
