@@ -80,10 +80,11 @@ export default class Orders {
     return this.adapter.request('POST', 'cart/validate', body);
   }
 
-  validate(orderObj) {
+  validate(orderObj, data = {}) {
     console.log('calling brandibble.js validate()')
     console.log('orderObj:', orderObj)
-    const body = orderObj.format();
+    console.log('data:', data)
+    const body = Object.assign({}, orderObj.format(), data);
     console.log('body:', body)
     /* Don't send staged password to validate endpoints */
     if (body.customer && body.customer.password) {
