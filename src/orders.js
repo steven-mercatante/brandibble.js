@@ -81,7 +81,10 @@ export default class Orders {
   }
 
   validate(orderObj) {
+    console.log('calling brandibble.js validate()')
+    console.log('orderObj:', orderObj)
     const body = orderObj.format();
+    console.log('body:', body)
     /* Don't send staged password to validate endpoints */
     if (body.customer && body.customer.password) {
       delete body.customer.password;
